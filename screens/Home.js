@@ -4,12 +4,15 @@ import HeaderTabs from '../components/HeaderTabs'
 import SearchBar from '../components/SearchBar'
 import Categories from '../components/Categories'
 import RestaurantItems, { localRestaurants } from '../components/RestaurantItems'
+import { Divider } from 'react-native-elements'
+import BottomTabs from '../components/BottomTabs'
 
 const YELP_API_KEY = "h959N7v3q7ejMaEi-RtR5DRivaN8A1pVpjMygjK12GOnsSsweSPKSN9TWZJl76tHf6yxrYMqMCfU8FlgDjb-6KzBkipxF1tWeY7j_PfbFLhP-tQmuxA4DkDN08cUYHYx"
 
 const Home = () => {
   const [restaurantData, setRestaurantData] = useState(localRestaurants)
   const [city, setCity] = useState('San Francisco')
+  const [activeTab, setActiveTab] = useState('Delivery')
 
   const getRestaurantsFromYelp = () => {
     const yelpUrl = `https://api.yelp.com/v3/businesses/search?term=restaurants&location=${city}`;
@@ -25,29 +28,30 @@ const Home = () => {
       .then((res) => res.json())
       .then((json) =>
         setRestaurantData(
-        //   json.businesses.filter((business) =>
-        //     business.transactions.includes(activeTab.toLowerCase())
-        //   )
-        json.businesses
+          json.businesses.filter((business) =>
+            business.transactions.includes(activeTab.toLowerCase())
+          )
         )
       );
   };
 
   useEffect(() => {
     getRestaurantsFromYelp()
-  }, [city])
+  }, [city, activeTab])
   
 
   return (
     <SafeAreaView style={{ backgroundColor: "#eee", flex: 1}}>
       <View style={{ backgroundColor: "white", padding: 15}}>
-        <HeaderTabs/>
+        <HeaderTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <SearchBar cityHandler={setCity}/>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Categories/>
         <RestaurantItems restaurantData={restaurantData} />
       </ScrollView>
+      <Divider width={1} />
+      <BottomTabs/>
     </SafeAreaView>
   )
 }
