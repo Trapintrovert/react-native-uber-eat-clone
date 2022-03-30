@@ -3,9 +3,12 @@ import React, {useState} from 'react'
 import { useSelector } from 'react-redux'
 import OrderItem from './OrderItem'
 import firebase from '../../firebase'
+import LottieView from 'lottie-react-native'
 
 export default function ViewCart({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const {items, restaurantName} = useSelector((state) => state.cartReducer.selectedItems)
   
   const total = items
@@ -18,14 +21,18 @@ export default function ViewCart({ navigation }) {
 
 
   const addOrderToFirebase = () => {
+    setLoading(true);
       const db = firebase.firestore();
       db.collection('orders').add({
             items: items,
             restaurantName: restaurantName,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      setModalVisible(false)
-      navigation.navigate('OrderCompleted')
+      });
+      setTimeout(() => {
+        setLoading(false)
+        
+        navigation.navigate('OrderCompleted')
+      }, 2500)
   }
 
 
@@ -90,6 +97,7 @@ export default function ViewCart({ navigation }) {
                 }}
                 onPress={() => {
                     addOrderToFirebase()
+                    setModalVisible(false)
                 }}
               >
                 <Text style={{ color: "white", fontSize: 20 }}>Checkout</Text>
@@ -163,6 +171,28 @@ export default function ViewCart({ navigation }) {
                 </View>
             </View>
 
+        ): null
+    }
+    {
+        loading ? (
+            <View
+            style={{ 
+                backgroundColor: 'black', 
+                position: 'absolute', 
+                opacity: 0.6,
+                justifyContent: 'center', 
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+            }}
+            >
+                <LottieView 
+                style={{ height: 200 }}
+                source={require("../../assets/animations/scanner.json")}
+                autoPlay
+                speed={3}
+                />
+            </View>
         ): null
     }
     </>

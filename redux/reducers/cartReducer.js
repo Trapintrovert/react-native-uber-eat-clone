@@ -8,14 +8,13 @@ let defaultState = {
         let newState = { ...state };
   
         if (action.payload.checkboxValue) {
-          console.log("ADD TO CART");
-  
+          
           newState.selectedItems = {
             items: [...newState.selectedItems.items, action.payload],
             restaurantName: action.payload.restaurantName,
           };
         } else {
-          console.log("REMOVE FROM CART");
+          
           newState.selectedItems = {
             items: [
               ...newState.selectedItems.items.filter(
@@ -25,7 +24,7 @@ let defaultState = {
             restaurantName: action.payload.restaurantName,
           };
         }
-        console.log(newState, "👉");
+        
         return newState;
       }
   
